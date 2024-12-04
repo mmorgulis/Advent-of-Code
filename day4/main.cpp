@@ -6,7 +6,7 @@
 long wordSearch(char (&matrix)[SIZE][SIZE], std::string parola) {
     long counter = 0;
 
-    // Ricerca in tutte le direzioni
+    // Ricerca in tutte le direzioni la parola XMAS
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             // Ricerca a destra
@@ -55,22 +55,20 @@ long wordSearch(char (&matrix)[SIZE][SIZE], std::string parola) {
 }
 
 long wordSearch2(char (&matrix)[SIZE][SIZE], std::string parola) {
+    // ricerco parola MAS in formazioni a X
     long counter = 0;
-
+    // CON LA PAROLA INVERSA
+    std::string inv = std::string(parola.rbegin(), parola.rend());
     // Faccio una ricerca in diagonale (SE, NE, NO, SO) della parola
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
-            // Ricerca match SE + SW
-            if (i <= SIZE - parola.size() && j <= SIZE - parola.size() && searchDiagonalSE(matrix, i, j, parola)
-                && i <= SIZE - parola.size() && j >= parola.size() - 1 && searchDiagonalSW(matrix, i, j, parola)) {
+            // Ricerca match SE + SW (sia mas sia sam)
+            if (i <= SIZE - parola.size() && j <= SIZE - parola.size() 
+                && (searchDiagonalSE(matrix, i, j, parola) || searchDiagonalSE(matrix, i, j, inv))  // ricerca sudest sia 'mas' sia 'sam'
+                && (searchDiagonalSW(matrix, i, j+2, parola) || searchDiagonalSW(matrix, i, j+2, inv))) { // ricerca sudovest due colonne dopo e nordovest due righe, le condizioni si verificano per forza
                 ++counter;
             }
 
-            // Ricerca match NE + NW
-            if (i >= parola.size() - 1 && j >= parola.size() - 1 && searchDiagonalNW(matrix, i, j, parola)
-                && i >= parola.size() - 1 && j <= SIZE - parola.size() && searchDiagonalNE(matrix, i, j, parola)) {
-                ++counter;
-            }
         }
     }
 
@@ -170,7 +168,7 @@ int main() {
         long totalMatches2 = wordSearch2(inputString, word2);
         std::cout << "Numero parole 'XMAS': " << totalMatches << std::endl;
         std::cout << "Numero parole 'X-MAS': " << totalMatches2 << std::endl;
-        // 567 too low
+        // 622 too low
     } else {
         std::cout << "Unable to open the file";
         return 1;
