@@ -31,4 +31,4 @@ bool searchUp(char (&matrix)[SIZE][SIZE], int i, int j, std::string parola);
 // Funzione per la ricerca sotto (verticale)
 bool searchDown(char (&matrix)[SIZE][SIZE], int i, int j, std::string parola);
 
-#endif // WORD_SEARCH_H
+#endif 
