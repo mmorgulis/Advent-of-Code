@@ -37,7 +37,8 @@ void openfile()
         }        
     } else {
         std::cout << "Unable to open the file" << std::endl;
-    }  
+    } 
+    myfile.close(); 
 }
 
 void printList() 

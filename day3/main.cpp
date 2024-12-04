@@ -15,6 +15,7 @@ void inputToString(std::string &str) {
     } else {
         std::cerr << "Unable to open the file" << std::endl;
     }
+    fileInput.close();
 
 }
 

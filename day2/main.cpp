@@ -82,6 +82,7 @@ int main()
     std::cout << "Il numero di report safe con la tolleranza è: " 
                 << numSafeTolerated << std::endl;
 
+    myFile.close();
     delete numeri;
 
     return 0;
