@@ -43,7 +43,6 @@ void printInput(const std::vector<std::vector<char>> &input)
 long move(std::vector<std::vector<char>> &input, char simbolo,
           int riga, int colonna, int rigaMax, int colonnaMax, int numPassi)
 {
-
     if (riga >= rigaMax || colonna >= colonnaMax || riga <= 0 || colonna <= 0) {
         return numPassi + 1;
     }
@@ -105,7 +104,7 @@ long move(std::vector<std::vector<char>> &input, char simbolo,
                 else 
                     return move(input, simbolo, riga + 1, colonna, rigaMax, colonnaMax, numPassi);
             }
-            
+            return -1; // in caso di errori
         }
     }
 }
