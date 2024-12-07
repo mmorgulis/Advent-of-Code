@@ -144,4 +144,7 @@ int main()
     // printInput(*input);
     long long tot = verOperation(*input);
     std::cout << tot << std::endl;
+
+    delete input;
+    return 0;
 }
