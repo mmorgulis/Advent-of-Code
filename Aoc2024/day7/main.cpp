@@ -2,13 +2,13 @@
 #include <vector>
 #include <fstream>
 #include <cassert>
-#include <cstdlib>
 #include <cmath>
 
+// Legge il file e riempie il vettore input
 void getInput(std::vector<std::vector<long long>> &input)
 {
     std::ifstream ifs("input.txt");
-    assert(ifs.is_open()); // Assicura che il file sia aperto
+    assert(ifs.is_open());
 
     std::string line;
     while (std::getline(ifs, line))
@@ -16,135 +16,87 @@ void getInput(std::vector<std::vector<long long>> &input)
         std::vector<long long> row;
         size_t pos = 0;
 
-        // Processa i numeri separati da ':'
-        while ((pos = line.find(':')) != std::string::npos)
+        while ((pos = line.find_first_of(": ")) != std::string::npos)
         {
             if (!line.substr(0, pos).empty())
-            { // Evita stringhe vuote
-                row.push_back(atol(line.substr(0, pos).c_str()));
+            {
+                row.push_back(std::stoll(line.substr(0, pos)));
             }
-            line.erase(0, pos + 1); // Rimuovi fino al separatore incluso
+            line.erase(0, pos + 1);
         }
-
-        // Processa i numeri separati da spazi
-        while ((pos = line.find(' ')) != std::string::npos)
-        {
-            if (!line.substr(0, pos).empty())
-            { // Evita stringhe vuote
-                row.push_back(atol(line.substr(0, pos).c_str()));
-            }
-            line.erase(0, pos + 1); // Rimuovi fino al separatore incluso
-        }
-
-        // Aggiungi l'ultimo numero della riga, se esiste
         if (!line.empty())
         {
-            row.push_back(atoll(line.c_str()));
+            row.push_back(std::stoll(line));
         }
 
-        // Aggiungi la riga al vettore di input
         input.push_back(row);
     }
-
     ifs.close();
 }
 
-void printInput(std::vector<std::vector<long long>> &input)
+// Genera tutte le combinazioni di operazioni per una data lunghezza
+void generateOperations(int size, std::vector<std::vector<bool>> &operations)
 {
-    for (auto vect : input)
-    {
-        for (auto num : vect)
-        {
-            std::cout << num << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
-void generateOperations(int size, std::vector<std::string> &operations)
-{
-    int numCombinations = pow(2, size); // 2^size combinazioni
+    int numCombinations = 1 << size; // 2^size combinazioni
     for (int i = 0; i < numCombinations; ++i)
     {
-        std::string op = "";
+        std::vector<bool> op;
         for (int j = 0; j < size; ++j)
         {
-            if (i & (1 << j))
-            { // Controlla il bit j di i
-                op += '+';
-            }
-            else
-            {
-                op += '*';
-            }
+            op.push_back(i & (1 << j));
         }
         operations.push_back(op);
     }
 }
 
-
-
-long combineOperation(std::vector<long long> &vettore, std::vector<std::string> &operation)
+// Applica una combinazione di operazioni al vettore
+long applyOperations(const std::vector<long long> &vettore, const std::vector<bool> &ops)
 {
-    long tot = 0;
-    long primoTermine = vettore[0];
-    int pos = 1;
-
-    for (auto str : operation)
-    {   
-        tot = vettore[1];
-        pos = 1;
-        for (auto c : str)
+    long result = vettore[1];
+    for (size_t i = 0; i < ops.size(); ++i)
+    {
+        if (ops[i])
         {
-            if (c == '+')
-            {
-                tot += vettore[pos + 1];
-            }
-            else
-            {
-                tot *=  vettore[pos + 1];
-            }
-            ++pos;
+            result += vettore[i + 2];
         }
-        if (tot == primoTermine)
+        else
         {
-            return primoTermine;
+            result *= vettore[i + 2];
         }
     }
-    return 0;
+    return result;
 }
 
-
-long verOperation(std::vector<std::vector<long long>> &input)
+// Verifica le operazioni e calcola il totale
+long verOperation(const std::vector<std::vector<long long>> &input)
 {
     long totale = 0;
-    std::vector<std::string> operation;
 
-    for (auto vect : input) // testo su tutte le equazioni di input
+    for (const auto &vect : input)
     {
-        generateOperations(vect.size() - 2, operation); // trovo tutte le combinazioni di + e *
-        for (auto string : operation)
+        int numOps = vect.size() - 2;
+        std::vector<std::vector<bool>> operations;
+        generateOperations(numOps, operations);
+
+        for (const auto &ops : operations)
         {
-            if (combineOperation(vect, operation) != 0)
+            if (applyOperations(vect, ops) == vect[0])
             {
                 totale += vect[0];
-                operation.clear(); // stoppo il for se trovo una combinazione
-                break;
+                break; // Fermati appena trovi una soluzione valida
             }
         }
     }
     return totale;
 }
 
-
 int main()
 {
-    std::vector<std::vector<long long>> *input = new std::vector<std::vector<long long>>;
-    getInput(*input);
-    // printInput(*input);
-    long long tot = verOperation(*input);
+    std::vector<std::vector<long long>> input;
+    getInput(input);
+
+    long long tot = verOperation(input);
     std::cout << tot << std::endl;
 
-    delete input;
     return 0;
 }
